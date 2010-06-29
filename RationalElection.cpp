@@ -7,7 +7,9 @@
  *
  */
 
+#include <iostream>
 #include "RationalElection.h"
+
 
 RationalElection::RationalElection() : Election<RationalVote>() {}
 RationalElection::RationalElection( const set<string>& candidates ) : Election<RationalVote>( candidates ) {}
@@ -48,4 +50,30 @@ int RationalElection::validate_votes() const {
         i++;
     }
     return 1;
+}
+
+void RationalElection::count_votes() {
+    if( !votes_.size() || !candidates_.size() ) {
+        cerr << "ERROR: No votes or no candidates present in election.\n";
+        return;
+    }
+    else if( !is_valid_ ) {
+        cerr << "ERROR: Election is invalid, votes cannot be counted.\n";
+        return;
+    }
+    else if( votes_counted_ ) { 
+        return;
+    }
+    set<string>::iterator j = candidates_.begin();
+    
+    multiset< RationalVote >::iterator i = votes_.begin();
+    
+    // Iterate through every vote in the multiset and every candidate in each vote.
+    // O(|V|*|C| * log|C| ) <= O(max(|V|,|C|))^3
+    vector<string>::iterator k;
+    while( i != votes_.end() ) {
+        count_vote( *i );
+        i++;
+    }
+    votes_counted_ = 1;
 }

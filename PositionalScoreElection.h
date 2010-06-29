@@ -62,10 +62,6 @@ class PositionalScoreElection : public RationalElection {
          */
         int remove_candidate( const string& candidate );
     public:
-        /**
-         * Counts all votes based on the positional scoring rule.
-         */
-        void count_votes();
        /**
          * Obtains a set of all the winners of this election.
          *

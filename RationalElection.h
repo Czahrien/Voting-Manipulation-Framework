@@ -36,5 +36,7 @@ class RationalElection : public Election<RationalVote> {
          * @return 0 if there is at least one invalid vote in the election - 1 otherwise
          */
         int validate_votes() const;
+        void count_votes();
+    
 };
 #endif
