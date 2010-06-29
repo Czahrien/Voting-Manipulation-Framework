@@ -12,8 +12,8 @@
  * This is the header file of the PositionalScoreElection class. The PositionalScoreElection class represents an election consisting of rational votes which counts the votes with a rule that awards points based on the position of the candidate within the votes. This type of voting system is a generalization of several Borda counts, Plurality systems(with any constant number of candidates being voted for by each voter, and Veto systems. 
  */
 
-#ifndef POSITIONALSCOREELECTION_H_
-#define POSITIONALSCOREELECTION_H_
+#ifndef CONDORCETELECTION_H_
+#define CONDORCETELECTION_H_
 #include <map>
 #include <set>
 #include <vector>
@@ -21,14 +21,14 @@
 #include "RationalVote.h"
 #include "RationalElection.h"
 using namespace std;
-class PositionalScoreElection : public RationalElection {
+class CondorcetElection : public RationalElection {
 public:
     /**
      * The default constructor.
      *
      * Initializes all of the private members to default values and initializes the candidates and votes to empty lists.
      */
-    PositionalScoreElection();
+    CondorcetElection();
     /**
      * The candidate constructor.
      *
@@ -36,7 +36,7 @@ public:
      *
      * @param candidates The candidates in the slection.
      */
-    PositionalScoreElection( const set<string>& candidates );
+    CondorcetElection( const set<string>& candidates );
     /**
      * The candidate and RationalVote constructor
      *
@@ -45,7 +45,7 @@ public:
      * @param candidates The candidates in the election.
      * @param votes The set of votes in the election.
      */
-    PositionalScoreElection( const set<string>& candidates, const multiset< RationalVote >& votes );
+    CondorcetElection( const set<string>& candidates, const multiset< RationalVote >& votes );
 public:
     /**
      * Adds a vote to the election.
@@ -81,10 +81,6 @@ public:
     int remove_candidate( const string& candidate );
 public:
     /**
-     * Counts all votes based on the positional scoring rule.
-     */
-    void count_votes();
-    /**
      * Obtains a set of all the winners of this election.
      *
      * @return A set of all winners of this election or an empty set if the votes are uncounted.
@@ -95,7 +91,7 @@ public:
      *
      * @return A map containing all of the candidates within the election and the number of votes they possess or an empty map if the votes are uncounted..
      */
-    map<string,int> get_vote_count() const;
+    map<pair<string,string>,int> get_vote_count() const;
     /**
      * Used by subclasses to generate a vector used to determine positional scores.
      */
