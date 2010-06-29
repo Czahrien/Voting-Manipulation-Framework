@@ -58,7 +58,7 @@ void RationalElection::count_votes() {
         return;
     }
     else if( !is_valid_ ) {
-        cerr << "ERROR: Election is invalid, votes cannot be counted.\n";
+        cerr << "\n";
         return;
     }
     else if( votes_counted_ ) { 
@@ -67,13 +67,11 @@ void RationalElection::count_votes() {
     set<string>::iterator j = candidates_.begin();
     
     multiset< RationalVote >::iterator i = votes_.begin();
-    
-    // Iterate through every vote in the multiset and every candidate in each vote.
-    // O(|V|*|C| * log|C| ) <= O(max(|V|,|C|))^3
+    // Iterate through every vote in the multiset.    
     vector<string>::iterator k;
     while( i != votes_.end() ) {
         count_vote( *i );
-        i++;
+        ++i;
     }
     votes_counted_ = 1;
 }

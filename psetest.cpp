@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <set>
 #include <vector>
 #include <string>
@@ -6,6 +7,7 @@
 #include "Borda.h"
 #include "Plurality.h"
 #include "Veto.h"
+#include "CondorcetElection.h"
 
 using namespace std;
 int main() {
@@ -40,7 +42,8 @@ int main() {
     V.insert( rv2 );
     V.insert( rv3 );
     V.insert( rv4 );
-
+    V.insert( rv4 );
+    
 
     Borda* e1 = new Borda( C, V );
     Plurality* e2 = new Plurality( C, V );
@@ -91,4 +94,39 @@ int main() {
     delete e1;
     delete e2;
     delete e3;
+    CondorcetElection con(C,V);
+    con.count_votes();
+    set<string> winners = con.get_winners();
+    if( winners.size() ) {
+        cout << "Winner: " << *(winners.begin()) << endl << endl;
+    }
+    else {
+        cout << "No condorcet winner present.\n\n";
+    }    
+    cout << "(r,c) corresponds to the number of votes in which the row candidate beat the column candidate in a head-to-head matchup.\n\n";
+
+    map<pair<string,string>,int> scores = con.get_vote_count();
+    
+    cout << setw(10) << " ";
+    set<string>::iterator i = C.begin(), j = i;
+    while( j != C.end() ) {
+        cout << setw(10) << *j;
+        j++;
+    }
+    cout << "\n";
+    while( i != C.end() ){
+        j = C.begin();
+        cout << setw(10) << *i;
+        while( j != C.end() ) {
+            if( *i != *j ) {
+                cout << setw(10) << scores[pair<string,string>(*i,*j)];
+            }
+            else {
+                cout << setw(10) << "-";
+            }
+            ++j;
+        }
+        cout << endl;
+        ++i;
+    }
 }

@@ -45,8 +45,8 @@ set<string> CondorcetElection::beats( const string& candidate ) const {
                 if( current_scores_.find(win)->second > current_scores_.find(lose)->second ) {
                     losers.insert( *i );
                 }
-                ++i;
             }
+            ++i;
         }
     }
     return losers;
@@ -80,16 +80,19 @@ void CondorcetElection::uncount_vote( const RationalVote& vote ) {
 void CondorcetElection::init() {
     set<string>::iterator i = candidates_.begin(), j;
     j = i;
-    while( i != candidates_.end() && ++j != candidates_.end() ) {
+    while( i != candidates_.end() ) {
         while( j != candidates_.end() ) {
-            pair<string,string> p(*j,*i);
-            current_scores_[p] = 0;
+            if( *i != *j ) {
+                pair<string,string> p(*j,*i);
+                current_scores_[p] = 0;
+            }
             ++j;
         }
         ++i;
         j =i;
     }
     if( validate_votes() ) {
+        is_valid_ = 1;
         //count_votes()
     }
     else {
