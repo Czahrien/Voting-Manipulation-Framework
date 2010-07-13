@@ -18,6 +18,7 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <iostream>
 using namespace std;
 template <typename T>
 class Election {
@@ -27,7 +28,7 @@ class Election {
          *
          * Initializes all of the private members to default values and initializes the candidates and votes to empty lists.
         */
-        Election() : candidates_(), votes_(), is_valid_(0), votes_counted_(0) {}
+    Election() : candidates_(), votes_(), is_valid_(0), votes_counted_(1) { }
         /**
          * The candidate constructor.
          *
@@ -35,7 +36,7 @@ class Election {
          *
          * @param candidates The candidates in the slection.
          */
-        Election( const set<string>& candidates ) : candidates_(candidates), votes_(), is_valid_(0), votes_counted_(0) {}
+    Election( const set<string>& candidates ) : candidates_(candidates), votes_(), is_valid_(0), votes_counted_(1) { }
         /**
          * The candidate and Vote constructor
          *
@@ -44,7 +45,7 @@ class Election {
          * @param candidates The candidates in the election.
          * @param votes The set of votes in the election.
          */
-        Election( const set<string>& candidates, const multiset<T>& votes ) : candidates_(candidates), votes_(votes), is_valid_(0), votes_counted_(0) {}
+    Election( const set<string>& candidates, const multiset<T>& votes ) : candidates_(candidates), votes_(votes), is_valid_(0), votes_counted_(0) { }
     public:
         /**
          * Adds a vote to the election.
@@ -75,12 +76,14 @@ class Election {
          */
     int remove_vote( const T& vote, int revalidate = 1 ) {
         typename multiset<T>::iterator i = votes_.find( vote );
+        cout << (i != votes_.end()) << "\n";
         if( i != votes_.end() ) {
             // If the vote is invalid - the election may be valid
             if( revalidate && !validate_vote( vote ) ) {
                 is_valid_ = validate_votes();
             }
             votes_.erase( i );
+            uncount_vote( vote );
             return 1;
         }
         else {
@@ -94,7 +97,14 @@ class Election {
          * @return TODO - determine this.
          */
         int add_candidate( const string& candidate ) {
-            return 0;
+            set<string>::iterator i = removed_candidates_.find( candidate );
+            if( i != removed_candidates_.end() ) {
+                candidates_.insert( candidate );
+                removed_candidates_.erase( i );
+                votes_counted_ = 0;
+                count_votes();
+            }
+            return i != removed_candidates_.end();
         }
         /**
          * Removes a candidate from the election.
@@ -103,13 +113,43 @@ class Election {
          * @return TODO - determine this.
          */
         int remove_candidate( const string& candidate ) {
-            return 0;
+            set<string>::iterator i = candidates_.find( candidate );
+            if( i != candidates_.end() ) {
+                removed_candidates_.insert( candidate );
+                candidates_.erase( i );
+                votes_counted_ = 0;
+                count_votes();
+            }
+            return i != candidates_.end();
         }
     public:
         /**
          * Counts all votes based on the positional scoring rule.
          */
-        virtual void count_votes() = 0;
+        void count_votes() {
+            if( !votes_.size() || !candidates_.size() ) {
+                cerr << "ERROR: No votes or no candidates present in election.\n";
+                return;
+            }
+            else if( !is_valid_ ) {
+                return;
+            }
+            else if( votes_counted_ ) { 
+                return;
+            }
+            else if( !votes_counted_ ) {
+                clear_scores();
+                set<string>::iterator j = candidates_.begin();
+        
+                typename multiset< T >::iterator i = votes_.begin();
+                // Iterate through every vote in the multiset.
+                while( i != votes_.end() ) {
+                    count_vote( *i );
+                    ++i;
+                }
+                votes_counted_ = 1;
+            }
+        }
        /**
          * Obtains a set of all the winners of this election.
          *
@@ -139,7 +179,16 @@ class Election {
          *
          * @return 0 if there is at least one invalid vote in the election - 1 otherwise
          */
-        int validate_votes() const;
+        int validate_votes() const {
+            typename multiset< T >::const_iterator i = votes_.begin();
+            while( i != votes_.end() ) {
+                if( !validate_vote( *i ) ) {
+                    return 0;
+                }
+                i++;
+            }
+            return 1;
+        }
         /**
          * Checks to see whether or not the election is valid.
          *
@@ -151,7 +200,46 @@ class Election {
         int votes_counted() const {
             return votes_counted_;
         }
+        /**
+         * Obtains a list of the votes present in this election.
+         */
+        multiset<T> get_votes() {
+            return votes_;
+        }
+        /**
+         * Obtains a list of votes present in this election without repeated votes being shown.
+         */
+        set<T> get_vote_list() {
+            set<T> ret( votes_.begin(), votes_.end() );
+            return ret;
+        }
+        /**
+         * Obtains a listing a votes mapping a vote to the number of times that it appears in
+         * the election.
+         */
+        map<T,int> get_vote_numbers() {
+            map<T,int> ret;
+            typename multiset<T>::iterator i = votes_.begin();
+            
+            while( i != votes_.end() ) {
+                ret[*i]++;
+                ++i;
+            }
+            return ret;
+        }
     protected:
+        /**
+        * Initializes the Election in a constructor independent manner.
+        */
+        void init() {
+            clear_scores();
+            if( validate_votes() ) {
+                is_valid_ = 1;
+                //TODO: Find a way to count votes here.
+            } else {
+                cerr << "At least one of the votes in this election are invalid.";
+            }
+        }
         /**
          * Adds the specified vote to the total count based on the positional scoring rule.
          * 
@@ -164,14 +252,20 @@ class Election {
          */
         virtual void uncount_vote( const T& vote) = 0;
         /**
-         * Initializes the Election.
+         * Erases the score-keeping data structure and recreates it from scratch.
+         *
+         * This function doubles as an initialization procedure.
          */
-        void init();
+        virtual void clear_scores() = 0;
     protected:
         /**
          * The candidate set.
          */
         set<string> candidates_;
+        /**
+         * The removed candidate set.
+         */
+        set<string> removed_candidates_;
          /**
          * the set containing all votes
          */

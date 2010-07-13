@@ -41,37 +41,3 @@ int RationalElection::validate_vote( const RationalVote& vote ) const {
     }
 }
 
-int RationalElection::validate_votes() const {
-    multiset< RationalVote >::const_iterator i = votes_.begin();
-    while( i != votes_.end() ) {
-        if( !validate_vote( *i ) ) {
-            return 0;
-        }
-        i++;
-    }
-    return 1;
-}
-
-void RationalElection::count_votes() {
-    if( !votes_.size() || !candidates_.size() ) {
-        cerr << "ERROR: No votes or no candidates present in election.\n";
-        return;
-    }
-    else if( !is_valid_ ) {
-        cerr << "\n";
-        return;
-    }
-    else if( votes_counted_ ) { 
-        return;
-    }
-    set<string>::iterator j = candidates_.begin();
-    
-    multiset< RationalVote >::iterator i = votes_.begin();
-    // Iterate through every vote in the multiset.    
-    vector<string>::iterator k;
-    while( i != votes_.end() ) {
-        count_vote( *i );
-        ++i;
-    }
-    votes_counted_ = 1;
-}

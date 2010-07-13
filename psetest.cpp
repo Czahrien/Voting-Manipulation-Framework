@@ -10,7 +10,7 @@
 #include "CondorcetElection.h"
 
 using namespace std;
-int main() {
+int main2() {
     set<string> C;
     C.insert( "Bill" );
     C.insert( "Bob" );
@@ -41,7 +41,6 @@ int main() {
     V.insert( rv1 );
     V.insert( rv2 );
     V.insert( rv3 );
-    V.insert( rv4 );
     V.insert( rv4 );
     
 
@@ -94,7 +93,40 @@ int main() {
     delete e1;
     delete e2;
     delete e3;
-    CondorcetElection con(C,V);
+    set<string> C2;
+    C2.insert( "Red" );
+    C2.insert( "Green" );
+    C2.insert( "Orange" );
+    C2.insert( "Blue" );
+    multiset<RationalVote> V2;
+    vector<string> v;
+    v.push_back( "Green" );
+    v.push_back( "Red" );
+    //v.push_back( "Green" );
+    v.push_back( "Orange" );
+    v.push_back( "Blue" );
+    V2.insert( RationalVote(v) );
+    v.clear();
+    v.push_back( "Red" );
+    v.push_back( "Blue" );
+    v.push_back( "Green" );
+    v.push_back( "Orange" );
+    V2.insert( RationalVote(v) );
+    v.clear();
+    v.push_back( "Green" );
+    v.push_back( "Red" );
+    v.push_back( "Orange" );
+    v.push_back( "Blue" );
+    V2.insert( RationalVote(v) );
+    v.clear();
+    v.push_back( "Orange" );
+    v.push_back( "Green" );
+    v.push_back( "Red" );
+    v.push_back( "Blue" );
+    V2.insert( RationalVote(v) );
+    
+    
+    CondorcetElection con(C2,V2);
     con.count_votes();
     set<string> winners = con.get_winners();
     if( winners.size() ) {
@@ -108,16 +140,16 @@ int main() {
     map<pair<string,string>,int> scores = con.get_vote_count();
     
     cout << setw(10) << " ";
-    set<string>::iterator i = C.begin(), j = i;
-    while( j != C.end() ) {
+    set<string>::iterator i = C2.begin(), j = i;
+    while( j != C2.end() ) {
         cout << setw(10) << *j;
         j++;
     }
     cout << "\n";
-    while( i != C.end() ){
-        j = C.begin();
+    while( i != C2.end() ){
+        j = C2.begin();
         cout << setw(10) << *i;
-        while( j != C.end() ) {
+        while( j != C2.end() ) {
             if( *i != *j ) {
                 cout << setw(10) << scores[pair<string,string>(*i,*j)];
             }
@@ -129,4 +161,5 @@ int main() {
         cout << endl;
         ++i;
     }
+    return 0;
 }

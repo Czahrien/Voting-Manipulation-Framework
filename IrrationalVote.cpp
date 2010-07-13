@@ -1,11 +1,18 @@
 #include "IrrationalVote.h"
+#include <iomanip>
+#include <cmath>
 
+// IrrationalVote - default constructor
 IrrationalVote::IrrationalVote() : Vote(), candidates_(), preferences_() {}
+
+// IrrationalVote
 IrrationalVote::IrrationalVote( const RationalVote& vote ) : Vote( vote.get_candidates() ), preferences_() {}
-IrrationalVote::IrrationalVote( const set<string>& candidates, const map<pair<string,string>,int> preferences ) : Vote(candidates), preferences_(preferences) {}
-int IrrationalVote::beats( string c1, string c2 ) const {
+
+// IrrationalVote
+IrrationalVote::IrrationalVote( const set<string>& candidates, const map<pair<string,string>,double> preferences ) : Vote(candidates), preferences_(preferences) {}
+int IrrationalVote::beats( const string& c1, const string& c2 ) const {
     pair<string,string> matchup(c1,c2);
-    map<pair<string,string>,int>::const_iterator i = preferences_.find( matchup );
+    map<pair<string,string>,double>::const_iterator i = preferences_.find( matchup );
     if( i != preferences_.end() ) {
         return i->second;
     }
@@ -13,10 +20,13 @@ int IrrationalVote::beats( string c1, string c2 ) const {
         return -1;
     }
 }
-map<pair<string,string>,int> IrrationalVote::get_preferences() const {
+
+// get_preferences
+map<pair<string,string>,double> IrrationalVote::get_preferences() const {
     return preferences_;
 }
 
+// is_rational
 int IrrationalVote::is_rational() const {
     set<int> ints;
     for (int i = 0; i < candidates_.size() - 1; i++) {
@@ -32,7 +42,18 @@ int IrrationalVote::is_rational() const {
         while( c != candidates_.end() ) {
             if( *c != *i ) { // this may be able to be removed in the future if
                              // vote verification allows for this to be checked sooner.
-                j++;
+                pair<string,string> m1(*i,*c);
+                pair<string,string> m2(*c,*i);
+                if( fabs( preferences_.at(m1) - preferences_.at(m2) ) < EPSILON ) {
+                    return 0;
+                }
+                else if( fabs( preferences_.at( m1 ) ) < EPSILON || fabs( preferences_.at( m1 ) - 1 ) < EPSILON ) {
+                    j++;
+                }
+                else {
+                    return 0;
+                }
+                //j++;
             }
             else {
                 return 0;
@@ -51,9 +72,62 @@ int IrrationalVote::is_rational() const {
 
 /*IrrationalVote::operator RationalVote() const {
     if( is_rational() ) {
-    
+        set<string> candidates = candidates_;
+        vector<string> vote;
+        
     }
     else {
         
     }
 }*/
+
+// ostream <<
+ostream& operator<<( ostream& out, const IrrationalVote& vote ) {
+    map<pair<string,string>,double> scores = vote.get_preferences();
+    set<string> candidates = vote.get_candidates();
+    
+    out << setw(10) << " ";
+    set<string>::iterator i = candidates.begin(), j = i;
+    while( j != candidates.end() ) {
+        out << setw(10) << *j;
+        j++;
+    }
+    out << "\n";
+    while( i != candidates.end() ){
+        j = candidates.begin();
+        out << setw(10) << *i;
+        while( j != candidates.end() ) {
+            if( *i != *j ) {
+                out << setw(10) << scores[pair<string,string>(*i,*j)];
+            }
+            else {
+                out << setw(10) << "-";
+            }
+            ++j;
+        }
+        out << "\n";
+        ++i;
+    }    
+    return out;
+}
+
+// IrrationalVote == IrrationalVote
+int operator==( const IrrationalVote& v1, const IrrationalVote& v2 ) {
+    return v1.get_candidates() == v2.get_candidates() && v1.get_preferences() == v2.get_preferences(); 
+}
+
+// IrrationalVote < IrrationalVote
+int operator<( const IrrationalVote& v1, const IrrationalVote& v2 ) {
+    set<string> c1(v1.get_candidates()), c2(v2.get_candidates());
+    if( c1 == c2 ) {
+        return v1.get_preferences() < v2.get_preferences();
+    }
+    else {
+        return c1 < c2;
+    }
+}
+
+// IrrationalVote > IrrationalVote
+int operator>( const IrrationalVote& v1, const IrrationalVote& v2 ) {
+    return v2 < v1;
+}

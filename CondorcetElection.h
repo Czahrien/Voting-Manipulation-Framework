@@ -65,20 +65,6 @@ public:
      * @return 0 if the vote is not in the election, 1 if the vote is found and successfully removed.
      */
     int remove_vote( const RationalVote& vote, int revalidate = 1 );
-    /**
-     * Adds a candidate to the election.
-     *
-     * @param candidate The candidate to add.
-     * @return TODO - determine this.
-     */
-    int add_candidate( const string& candidate );
-    /**
-     * Removes a candidate from the election.
-     *
-     * @param candidate The candidate to remove.
-     * @return TODO - determine this.
-     */
-    int remove_candidate( const string& candidate );
 public:
     /**
      * Obtains a set of all the winners of this election.
@@ -93,18 +79,25 @@ public:
      */
     map<pair<string,string>,int> get_vote_count() const;
     /**
-     * Used by subclasses to generate a vector used to determine positional scores.
+     * Obtains a set of the candidates that the specified candidate beats.
+     * 
+     * @param candidate The candidate to compare to others.
+     * @return A subset of the candidate set that is beat by the specified candidate.
      */
     set<string> beats( const string& candidate ) const;
+    /**
+     * Clears the score holding data structure. This doubles as an initializer for the score data structure.
+     */
+    void clear_scores();
 protected:
     /**
-     * Adds the specified vote to the total count based on the positional scoring rule.
+     * Adds the specified vote to the total count based on the vote counting rule.
      * 
      * @param vote The vote to add to the count.
      */
     void count_vote( const RationalVote& vote );
     /**
-     * Adds the specified vote to the total count based on the positional scoring rule. 
+     * Adds the specified vote to the total count based on the vote counting rule. 
      * 
      * @param vote The vote to add to the count .
      */
@@ -113,7 +106,7 @@ protected:
     /**
      * Initializes the PositionalScoreElection.
      */
-    void init();
+    //void init();
     /**
      * The scores in the current election.
      */

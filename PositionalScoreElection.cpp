@@ -13,8 +13,7 @@ PositionalScoreElection::PositionalScoreElection( const set<string>& candidates,
     init();
 }
         
-void PositionalScoreElection::init() {
-    set<string>::iterator i = candidates_.begin();
+/*void PositionalScoreElection::init() {
     
     is_valid_ = validate_votes();
     if( is_valid_ ) {
@@ -23,7 +22,7 @@ void PositionalScoreElection::init() {
     else {
         cerr << "Invalid election.\n";
     }
-}
+}*/
 
 void PositionalScoreElection::count_vote( const RationalVote& vote ) {
     //if( current_scores_.size() != candidates_.size() ) {
@@ -47,7 +46,16 @@ void PositionalScoreElection::count_vote( const RationalVote& vote ) {
 }
 
 void PositionalScoreElection::uncount_vote( const RationalVote& vote ) {
- //TODO: IMPLEMENT ME!   
+    vector<string> v = vote.get_preference_order();
+    vector<string>::const_iterator k = v.begin();
+    int n = 0;
+    while( k != v.end() ) {
+        const string& c = *k;
+        if( candidates_.find( c ) != candidates_.end() ) {
+            current_scores_[c] -= position_score( n++ );
+        }
+        k++;
+    }   
 }
 
 set<string> PositionalScoreElection::get_winners() const {
@@ -92,4 +100,14 @@ set<string> PositionalScoreElection::beats( const string& candidate ) const {
     }
     else 
         return set<string>();
+}
+
+void PositionalScoreElection::clear_scores() {
+    current_scores_.clear();
+    set<string>::iterator i = candidates_.begin();
+    
+    while( i != candidates_.end() ) {
+        current_scores_[*i] = 0;
+        ++i;
+    }
 }

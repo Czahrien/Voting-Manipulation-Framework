@@ -28,15 +28,5 @@ class RationalElection : public Election<RationalVote> {
          * @return 0 if at least one candidate from this election's candidate set are missing - 1 otherwise.
          */
         int validate_vote( const RationalVote& vote ) const;
-        /**
-         * Validates all the votes in the election.
-         *
-         * Checks to see if all the votes in the election are a complete ordering containing all of the candidates in the election.
-         *
-         * @return 0 if there is at least one invalid vote in the election - 1 otherwise
-         */
-        int validate_votes() const;
-        void count_votes();
-    
 };
 #endif

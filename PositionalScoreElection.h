@@ -47,21 +47,6 @@ class PositionalScoreElection : public RationalElection {
          */
         PositionalScoreElection( const set<string>& candidates, const multiset< RationalVote >& votes );
     public:
-        /**
-         * Adds a candidate to the election.
-         *
-         * @param candidate The candidate to add.
-         * @return TODO - determine this.
-         */
-        int add_candidate( const string& candidate );
-        /**
-         * Removes a candidate from the election.
-         *
-         * @param candidate The candidate to remove.
-         * @return TODO - determine this.
-         */
-        int remove_candidate( const string& candidate );
-    public:
        /**
          * Obtains a set of all the winners of this election.
          *
@@ -79,6 +64,7 @@ class PositionalScoreElection : public RationalElection {
          */
         virtual int position_score( int position ) const = 0;
         set<string> beats( const string& candidate ) const;
+        void clear_scores();
     protected:
         /**
          * Adds the specified vote to the total count based on the positional scoring rule.
@@ -96,7 +82,7 @@ class PositionalScoreElection : public RationalElection {
         /**
          * Initializes the PositionalScoreElection.
          */
-        void init();
+        //void init();
         /**
          * The scores in the current election.
          */
