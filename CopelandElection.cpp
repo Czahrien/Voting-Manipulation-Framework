@@ -22,34 +22,50 @@ CopelandElection::CopelandElection( const set<string>& candidates, const multise
 
 // get_winners
 set<string> CopelandElection::get_winners() const {
-    double current_max_score = 0.0;
+    int current_max_wins = 0;
     set<string>::iterator s = candidates_.begin(), t = s;
     set<string> winners;
+    map<string,double> win_count;
     
-    pair<string,string> m;
+    // Compute the map containing the number of wins of each candidate:
+    pair<string,string> m1, m2;
     while( s != candidates_.end() ) {
-        double score;
+        t = s;
+        ++t;
+        m1.first = *s;
+        m2.second = *s;
         while( t != candidates_.end() ) {
-            m.first = *s;
+            m1.second = *t;
+            m2.first = *t;
             if( t != s ) {
-                m.second = *t;
-                score += scores_.at(m);
+                if( scores_.at(m1) > scores_.at(m2) ) {
+                    win_count[*s] += 1;
+                }
+                else if(scores_.at(m1) == scores_.at(m2)) {
+                    win_count[*s] += tie_score_;
+                    win_count[*t] += tie_score_;
+                } 
+                else {
+                    win_count[*t] += 1;
+                }
             }
             ++t;
         }
-        
-        if( current_max_score < score ) {
-            winners.clear();
-            current_max_score = score;
-            winners.insert( *s );
-        } else if( current_max_score == score ) {
-            winners.insert( *s );
-        }
-        
         ++s;
-        t = candidates_.begin();
     }
     
+    // Select the greatest number of wins in the map and the candidate(s) that
+    //go(es) with it:
+    map<string,double>::iterator i = win_count.begin();
+    while( i != win_count.end() ) {
+        if( i->second > current_max_wins ) {
+            winners.clear();
+            winners.insert( i->first );
+        } else if( i->second == current_max_wins ) {
+            winners.insert( i->first );
+        }
+        ++i;
+    }
     return winners;
 }
 
@@ -57,9 +73,9 @@ set<string> CopelandElection::get_winners() const {
 int CopelandElection::beats( const string& c1, const string& c2 ) const {
     pair<string,string> p1(c1,c2);
     pair<string,string> p2(c2,c1);
-    map<pair<string,string>,double>::const_iterator m1 = scores_.find(p1), m2 = scores_.find(p2);
+    map<pair<string,string>,int>::const_iterator m1 = scores_.find(p1), m2 = scores_.find(p2);
     if( m1 != scores_.end() && m2 != scores_.end() ) {
-        return *m1 > *m2;
+        return m1->second > m2->second;
     }
     return 0;
 }
@@ -67,23 +83,25 @@ int CopelandElection::beats( const string& c1, const string& c2 ) const {
 // count_vote
 void CopelandElection::count_vote( const IrrationalVote& vote ) {
     set<string>::iterator s = candidates_.begin(), t = s;
-    map<pair<string,string>,double> v( vote.get_preferences() );
+    map<pair<string,string>,int> v( vote.get_preferences() );
     // vote has already been verified...
     double score;
-    pair<string,string> m;
+    pair<string,string> m, m2;
     while( s != candidates_.end() ) { 
         m.first = *s;
+        m2.second = *s;
         while( t != candidates_.end() ) {
             m.second = *t;
+            m2.first = *t;
             score = v[m];
-            if( fabs(v[m] - 1.0) < EPSILON ) {
+            if( score == 1.0 ) {
                 scores_[m] += 1.0;
-            }
-            else if( fabs(v[m] - 0.5) < EPSILON ) {
-                scores_[m] += tie_score_;
+                assert(v[m2] == 0);
+                
             }
             else {
-                assert( fabs(v[m]) < EPSILON );
+                assert( v[m] == 0 );
+                assert( v[m2] == 1 );
             }
             ++t;
         }
@@ -95,27 +113,29 @@ void CopelandElection::count_vote( const IrrationalVote& vote ) {
 // uncount_vote
 void CopelandElection::uncount_vote( const IrrationalVote& vote ) {
     set<string>::iterator s = candidates_.begin(), t = s;
-    map<pair<string,string>,double> v( vote.get_preferences() );
+    map<pair<string,string>,int> v( vote.get_preferences() );
     // vote has already been verified...
     double score;
-    pair<string,string> m;
+    pair<string,string> m, m2;
     while( s != candidates_.end() ) {
         m.first = *s;
+        m2.second = *s;
         while( t != candidates_.end() ) {
             m.second = *t;
+            m2.first = *t;
             score = v[m];
-            if( fabs(v[m] - 1.0) < EPSILON ) {
+            if( score == 1.0 ) {
                 scores_[m] -= 1.0;
-            }
-            else if( fabs(v[m] - 0.5) < EPSILON ) {
-                scores_[m] -= tie_score_;
+                assert(v[m2] == 0);
+                
             }
             else {
-                assert( fabs(v[m]) < EPSILON );
+                assert( v[m] == 0 );
+                assert( v[m2] == 1 );
             }
             ++t;
         }
-        ++s;
+        ++s;        
         t = candidates_.begin();
     }
 }

@@ -1,38 +1,23 @@
 #include <iostream>
 #include "PositionalScoreElection.h"
 
+// PositionalScoreElection - default constructor
 PositionalScoreElection::PositionalScoreElection() : RationalElection() {
     init();
 }
 
+// PositionalScoreElection
 PositionalScoreElection::PositionalScoreElection( const set<string>& candidates ) : RationalElection( candidates ) {
     init();
 }
 
+// PositionalScoreElection
 PositionalScoreElection::PositionalScoreElection( const set<string>& candidates, const multiset< RationalVote >& votes ) :RationalElection( candidates, votes ) {
     init();
 }
-        
-/*void PositionalScoreElection::init() {
-    
-    is_valid_ = validate_votes();
-    if( is_valid_ ) {
-        //count_votes();
-    }
-    else {
-        cerr << "Invalid election.\n";
-    }
-}*/
 
+// count_vote
 void PositionalScoreElection::count_vote( const RationalVote& vote ) {
-    //if( current_scores_.size() != candidates_.size() ) {
-        // error condition.
-    //    cerr << "Error counting the vote.\n";
-    //} else if ( !validate_vote( vote ) ) {
-    //    cerr << "Vote is invalid.\n";
-    //} else if( !votes_counted_ ) {
-    //    count_votes(); // TODO - Is this an issue? 
-    //} else {
     vector<string> v = vote.get_preference_order();
     vector<string>::const_iterator k = v.begin();
     int n = 0;
@@ -45,6 +30,7 @@ void PositionalScoreElection::count_vote( const RationalVote& vote ) {
     }
 }
 
+// uncount_vote
 void PositionalScoreElection::uncount_vote( const RationalVote& vote ) {
     vector<string> v = vote.get_preference_order();
     vector<string>::const_iterator k = v.begin();
@@ -58,6 +44,7 @@ void PositionalScoreElection::uncount_vote( const RationalVote& vote ) {
     }   
 }
 
+// get_winners
 set<string> PositionalScoreElection::get_winners() const {
     map<string,int>::const_iterator i = current_scores_.begin();
     int max_score = 0;
@@ -78,11 +65,12 @@ set<string> PositionalScoreElection::get_winners() const {
     return win;
 }
 
+// get_vote_count
 map<string,int> PositionalScoreElection::get_vote_count() const {
-    //TODO: add error checks
     return current_scores_;
 }
 
+// beats
 set<string> PositionalScoreElection::beats( const string& candidate ) const {
     map<string,int>::const_iterator i = current_scores_.find( candidate );
     if( i != current_scores_.end() ) { 
@@ -102,6 +90,7 @@ set<string> PositionalScoreElection::beats( const string& candidate ) const {
         return set<string>();
 }
 
+// clear_scores
 void PositionalScoreElection::clear_scores() {
     current_scores_.clear();
     set<string>::iterator i = candidates_.begin();

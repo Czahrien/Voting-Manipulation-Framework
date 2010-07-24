@@ -93,30 +93,7 @@ void CondorcetElection::uncount_vote( const RationalVote& vote ) {
     }
 }
 
-// init
-/*void CondorcetElection::init() {
-    set<string>::iterator i = candidates_.begin(), j;
-    j = i;
-    while( i != candidates_.end() ) {
-        while( j != candidates_.end() ) {
-            if( *i != *j ) {
-                pair<string,string> p(*j,*i);
-                current_scores_[p] = 0;
-            }
-            ++j;
-        }
-        ++i;
-        j =i;
-    }
-    if( validate_votes() ) {
-        is_valid_ = 1;
-        //count_votes()
-    }
-    else {
-        std::cerr << "Invalid election.";
-    }
-}*/
-
+// clear_scores
 void CondorcetElection::clear_scores() {
     current_scores_.clear();
     set<string>::iterator i = candidates_.begin(), j;

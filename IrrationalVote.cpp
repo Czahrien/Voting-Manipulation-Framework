@@ -1,18 +1,19 @@
-#include "IrrationalVote.h"
 #include <iomanip>
-#include <cmath>
+#include "IrrationalVote.h"
 
 // IrrationalVote - default constructor
 IrrationalVote::IrrationalVote() : Vote(), candidates_(), preferences_() {}
 
 // IrrationalVote
-IrrationalVote::IrrationalVote( const RationalVote& vote ) : Vote( vote.get_candidates() ), preferences_() {}
+IrrationalVote::IrrationalVote( const RationalVote& vote ) : Vote( vote.get_candidates() ), preferences_() {
+
+}
 
 // IrrationalVote
-IrrationalVote::IrrationalVote( const set<string>& candidates, const map<pair<string,string>,double> preferences ) : Vote(candidates), preferences_(preferences) {}
+IrrationalVote::IrrationalVote( const set<string>& candidates, const map<pair<string,string>,int>& preferences ) : Vote(candidates), preferences_(preferences) {}
 int IrrationalVote::beats( const string& c1, const string& c2 ) const {
     pair<string,string> matchup(c1,c2);
-    map<pair<string,string>,double>::const_iterator i = preferences_.find( matchup );
+    map<pair<string,string>,int>::const_iterator i = preferences_.find( matchup );
     if( i != preferences_.end() ) {
         return i->second;
     }
@@ -22,7 +23,7 @@ int IrrationalVote::beats( const string& c1, const string& c2 ) const {
 }
 
 // get_preferences
-map<pair<string,string>,double> IrrationalVote::get_preferences() const {
+map<pair<string,string>,int> IrrationalVote::get_preferences() const {
     return preferences_;
 }
 
@@ -44,10 +45,10 @@ int IrrationalVote::is_rational() const {
                              // vote verification allows for this to be checked sooner.
                 pair<string,string> m1(*i,*c);
                 pair<string,string> m2(*c,*i);
-                if( fabs( preferences_.at(m1) - preferences_.at(m2) ) < EPSILON ) {
+                if( preferences_.at(m1) == preferences_.at(m2) ) {
                     return 0;
                 }
-                else if( fabs( preferences_.at( m1 ) ) < EPSILON || fabs( preferences_.at( m1 ) - 1 ) < EPSILON ) {
+                else if( preferences_.at( m1 ) == 0 || preferences_.at( m1 ) == 1 ) {
                     j++;
                 }
                 else {
@@ -70,20 +71,36 @@ int IrrationalVote::is_rational() const {
     return 1;
 }
 
-/*IrrationalVote::operator RationalVote() const {
+// Cast to a rational vote.
+IrrationalVote::operator RationalVote() const {
     if( is_rational() ) {
         set<string> candidates = candidates_;
         vector<string> vote;
-        
+        while( candidates.size() ) {
+            set<string>::iterator s = candidates_.begin();
+            string greatest_candidate = *s;
+            while( s != candidates.end() ) {
+                if( *s != greatest_candidate ) {
+                    if( beats( *s, greatest_candidate ) ) {
+                        greatest_candidate = *s;
+                    }
+                }
+                ++s;
+            }
+            vote.push_back( greatest_candidate );
+            candidates.erase( greatest_candidate );
+        }
+        return RationalVote( vote );
     }
     else {
-        
+        // No use in trying to make a vote if the vote isn't even rational.
+        return RationalVote();
     }
-}*/
+}
 
 // ostream <<
 ostream& operator<<( ostream& out, const IrrationalVote& vote ) {
-    map<pair<string,string>,double> scores = vote.get_preferences();
+    map<pair<string,string>,int> scores = vote.get_preferences();
     set<string> candidates = vote.get_candidates();
     
     out << setw(10) << " ";

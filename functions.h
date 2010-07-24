@@ -1,3 +1,7 @@
+/**
+ * @file functions.h
+ * @author Benjamin Mayes <bdm8233@rit.edu>
+ */
 #ifndef FUNCTIONS_H_
 #define FUNCTIONS_H_
 

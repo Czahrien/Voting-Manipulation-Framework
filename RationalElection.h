@@ -16,8 +16,22 @@
 using namespace std;
 class RationalElection : public Election<RationalVote> {
     public:
+        /**
+         * Default constructor
+         */
         RationalElection();
+        /**
+         * Constructs a RationalElection from a set of candidates.
+         *
+         * @param candidates The set of candidates.
+         */
         RationalElection( const set<string>& candidates );
+        /**
+         * Consturcts a RationalElection from a set of candidates and votes.
+         *
+         * @param candidates The set of candidates.
+         * @param votes A multiset of votes.
+         */
         RationalElection( const set<string>& candidates, const multiset< RationalVote >& votes );
         /**
          * Checks a vote for validity.

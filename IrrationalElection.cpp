@@ -10,19 +10,18 @@
 #include "IrrationalElection.h"
 #include <cmath>
 
-IrrationalElection::IrrationalElection() : Election<IrrationalVote>(), scores_() {
+// IrrationalElection - default constructor
+IrrationalElection::IrrationalElection() : Election<IrrationalVote>(), scores_() {}
 
-}
-IrrationalElection::IrrationalElection( const set<string>& candidates ) : Election<IrrationalVote>( candidates ), scores_() {
-    
-}
-IrrationalElection::IrrationalElection( const set<string>& candidates, const multiset< IrrationalVote >& votes ) : Election<IrrationalVote>( candidates, votes ), scores_()
-{
+// IrrationalElection
+IrrationalElection::IrrationalElection( const set<string>& candidates ) : Election<IrrationalVote>( candidates ), scores_() {}
 
-}
+// IrrationalElection
+IrrationalElection::IrrationalElection( const set<string>& candidates, const multiset< IrrationalVote >& votes ) : Election<IrrationalVote>( candidates, votes ), scores_() {}
 
+// validate_vote
 int IrrationalElection::validate_vote( const IrrationalVote& vote ) const {
-    map<pair<string,string>,double> prefs = vote.get_preferences();
+    map<pair<string,string>,int> prefs = vote.get_preferences();
     pair<string,string> p;
     set<string>::iterator i = candidates_.begin(), j = i;
     while( i != candidates_.end() ) {
@@ -30,15 +29,12 @@ int IrrationalElection::validate_vote( const IrrationalVote& vote ) const {
         while( j != candidates_.end() ) {
             p.first = *i;
             p.second = *j;
-            if( i != j ) {
+            if( *i != *j ) {
                 if( prefs.find( p ) != prefs.end() ) {
-                    double n = prefs.at( p );    
-                    if( fabs(n) > EPSILON || fabs(n - 1) > EPSILON ) {
+                    int n = prefs.at( p );    
+                    if( n < 0 || n > 1 ) {
                         return 0;
                     }
-                    //if( n == 1 && !ties_allowed() ) {
-                    // check if the reveresed pair == 1
-                    //}
                 }
                 else {
                     return 0;
@@ -55,7 +51,9 @@ int IrrationalElection::validate_vote( const IrrationalVote& vote ) const {
     return 1;
 }
 
-void IrrationalElection::init() {
+// clear_scores
+void IrrationalElection::clear_scores() {
+    scores_.clear();
     pair<string,string> p;
     set<string>::iterator i = candidates_.begin(), j = i;
     while( i != candidates_.end() ) {
@@ -69,11 +67,5 @@ void IrrationalElection::init() {
             ++j;
         }
         j = ++i;
-    }
-    if( validate_votes() ) {
-        is_valid_ = 1;
-    }
-    else {
-        cerr << "Invalid votes within Copeland Election.\n";
     }
 }

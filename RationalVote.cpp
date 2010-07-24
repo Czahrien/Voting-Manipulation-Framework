@@ -1,5 +1,4 @@
 #include "RationalVote.h"
-#include "IrrationalVote.h"
 #include <ostream>
 using namespace std;
 
@@ -47,18 +46,19 @@ RationalVote::operator vector<string>() const {
 
 // cast to IrrationalVote
 /*RationalVote::operator IrrationalVote() const {
-    map<pair<string,string>,int>::iterator ret;
-    set<string>::const_iterator i = preferences_.begin();
-    set<string>::const_iterator j;
+    map<pair<string,string>,int> vote;
+    vector<string>::const_iterator i = preference_order_.begin();
+    vector<string>::const_iterator j;
     while( i != preference_order_.end() ) {
         j = i + 1;
         while( j != preference_order_.end() ) {
-            ret.insert(pair<string,string>(*i,*j), 1);
-            ret.insert(pair<string,string>(*j,*i), 0);
+            vote[pair<string,string>(*i,*j)] = 1;
+            vote[pair<string,string>(*j,*i)] = 0;
             j++;
         }
         i++;
-    }   
+    }
+    IrrationalVote ret(candidates_, vote);
     return ret;
 }*/
 

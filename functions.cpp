@@ -1,3 +1,8 @@
+/**
+ * @file Functions.cpp
+ * @author Benjamin Mayes <bdm8233@rit.edu>
+ */
+
 // This code is taken straight from http://stackoverflow.com/questions/448944/c-non-blocking-keyboard-input#448982
 // This guy needs to be properly thanked and credited.
 

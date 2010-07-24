@@ -1,7 +1,6 @@
 /**
  * @file PositionalScoreElection.h
  * @author Benjamin Mayes <bdm8233@rit.edu>
- * @version 0.5
  *
  * @section LICENSE
  *
@@ -63,7 +62,15 @@ class PositionalScoreElection : public RationalElection {
          * Used by subclasses to generate a vector used to determine positional scores.
          */
         virtual int position_score( int position ) const = 0;
+        /**
+         * Returns a set of candidates beat by a given candidate.
+         *
+         * @return The set of candidates beat by the given candidate.
+         */
         set<string> beats( const string& candidate ) const;
+        /**
+         * Clears the computed scores in the election.
+         */
         void clear_scores();
     protected:
         /**
@@ -78,11 +85,7 @@ class PositionalScoreElection : public RationalElection {
          * @param vote The vote to add to the count .
          */
         void uncount_vote( const RationalVote& vote );
-    
-        /**
-         * Initializes the PositionalScoreElection.
-         */
-        //void init();
+    protected:
         /**
          * The scores in the current election.
          */

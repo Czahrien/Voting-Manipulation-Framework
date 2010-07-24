@@ -227,6 +227,13 @@ class Election {
             }
             return ret;
         }
+        /**
+         * Erases all the votes within the Election.
+         */
+        void erase_votes() {
+            clear_scores();
+            votes_.clear();
+        }
     protected:
         /**
         * Initializes the Election in a constructor independent manner.

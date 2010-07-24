@@ -4,9 +4,8 @@
 #include <set>
 #include <string>
 #include <vector>
+#include "Vote.h"
 #include "RationalVote.h"
-// EPSILON is used in floating point number comparison.
-#define EPSILON 0.001f
 using namespace std;
 class IrrationalVote : public Vote {
     public:
@@ -27,7 +26,7 @@ class IrrationalVote : public Vote {
          * @param candidates The set of candidates.
          * @param preference The (candidates.size())^2 matrix of preferences.
          */
-        IrrationalVote( const set<string>& candidates, const map<pair<string,string>,double> preferences );
+        IrrationalVote( const set<string>& candidates, const map<pair<string,string>,int>& preferences );
         /**
          * Determines whether or not c1 is preferred over c2.
          *
@@ -40,17 +39,17 @@ class IrrationalVote : public Vote {
          * @return a vector of vectors representing an |C|*|C| matrix which
          * show the preferences of the voter.
          */
-        map<pair<string,string>,double> get_preferences() const;
+        map<pair<string,string>,int> get_preferences() const;
         /**
          * Obtains the list of candidates this vote is over.
          *
          * @return the list of canddates represented by this vote.
          */
         int is_rational() const;
-        //operator RationalVote() const
+        operator RationalVote() const;
     private:
             set<string> candidates_;
-            map<pair<string,string>,double> preferences_;
+            map<pair<string,string>,int> preferences_;
 };
 
 /**

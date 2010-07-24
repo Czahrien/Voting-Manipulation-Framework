@@ -10,21 +10,19 @@
 #include <iostream>
 #include "RationalElection.h"
 
-
+// RationalElection - default constructor
 RationalElection::RationalElection() : Election<RationalVote>() {}
+
+// RationalElection
 RationalElection::RationalElection( const set<string>& candidates ) : Election<RationalVote>( candidates ) {}
+
+// RationalElection
 RationalElection::RationalElection( const set<string>& candidates, const multiset<RationalVote>& votes ) : Election<RationalVote>( candidates, votes ) {}
 
+// validate_vote
 int RationalElection::validate_vote( const RationalVote& vote ) const {
-    // Check if the candidate set is a subset of the vote set. Thank Turing that sets are sorted~
-    
-    // Convert the votes to a set.
-    // Note that this algorithm runs O(N) instead of O(N*logN) like it would if I just looked up each candidate in the set.
-    // So this SHOULD be faster.
-    
-    set<string> vote_set(vote.get_candidates());//vote.begin(), vote.end());
-    // TODO: Determine whether or not it is actually needed to check the size of a rational
-    // voter's preference order.
+    // Check if the candidate set is a subset of the vote set.
+    set<string> vote_set(vote.get_candidates());
     if( vote_set.size() == vote.get_preference_order().size() && vote_set.size() >= candidates_.size() ) {
         set<string>::const_iterator i = vote_set.begin();
         set<string>::const_iterator j = candidates_.begin();
